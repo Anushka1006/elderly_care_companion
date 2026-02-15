@@ -23,7 +23,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True) # Fixed the unsafe_allow_html error
 
-st.title("👵 SeniorVoice Companion")
+st.title("👵 Elderly Voice Companion")
 
 # 2. Sidebar for Groq API Key
 with st.sidebar:
