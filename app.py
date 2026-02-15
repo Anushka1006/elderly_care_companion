@@ -3,33 +3,27 @@ from groq import Groq
 import os
 from dotenv import load_dotenv
 
-# 1. Setup and Visual Styling
 load_dotenv()
 st.set_page_config(page_title="Elderly Care Companion", layout="wide")
 
-# Custom CSS for Lavender Background and senior readability
+# Senior-friendly styling
 st.markdown("""
     <style>
     .stApp { background-color: #F3E5F5; } 
     h1, h2, h3 { color: #4A148C; }
-    .stButton>button { 
-        border-radius: 20px; 
-        background-color: #7B1FA2; 
-        color: white; 
-        font-size: 20px !important; 
-        height: 3em;
-    }
+    .stButton>button { border-radius: 20px; background-color: #7B1FA2; color: white; font-size: 20px !important; height: 3em; }
     p, span, div { font-size: 22px !important; }
     </style>
-    """, unsafe_allow_html=True) # Fixed the unsafe_allow_html error
+    """, unsafe_allow_html=True)
 
 st.title("👵 SeniorVoice Companion")
 
-# 2. Sidebar for Groq API Key
 with st.sidebar:
     st.header("⚙️ Settings")
     api_key = st.text_input("Enter Groq API Key", type="password")
-    st.info("Get your free key at console.groq.com")
+    # NEW: Language Selector
+    target_lang = st.selectbox("Select Your Language", ["English", "Hindi", "Spanish", "French", "German"])
+    st.info("The AI will respond in your chosen language.")
 
 if api_key:
     client = Groq(api_key=api_key)
@@ -37,18 +31,14 @@ if api_key:
 
     with col1:
         st.subheader("💬 Voice & Chat Support")
-        if st.button("🎤 Tap to Speak"):
-            st.info("Listening... (Simulating Voice Input)")
-        
         if prompt := st.chat_input("How can I help you?"):
-            # Emergency logic
             if any(word in prompt.lower() for word in ["help", "fall", "pain", "emergency"]):
                 st.error("🚨 EMERGENCY ALERT! Notifying your family now.")
             
-            # Using the latest supported Groq model
+            # Updated Prompt for Multilingual Support
             res = client.chat.completions.create(
                 model="llama-3.3-70b-versatile", 
-                messages=[{"role": "system", "content": "You are a gentle assistant for seniors."},
+                messages=[{"role": "system", "content": f"You are a gentle assistant for seniors. Always respond in {target_lang}."},
                           {"role": "user", "content": prompt}]
             )
             st.write(res.choices[0].message.content)
@@ -58,13 +48,11 @@ if api_key:
         notes = st.text_area("Paste doctor notes here:", height=200)
         if st.button("🔍 Simplify & Compress"):
             if notes:
-                # Health Compression Logic
+                # Updated Logic: Summarize AND Translate
                 comp_res = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile", # Updated model name
-                    messages=[{"role": "user", "content": f"Summarize this for a senior into 3 simple bullet points: {notes}"}]
+                    model="llama-3.3-70b-versatile",
+                    messages=[{"role": "user", "content": f"Summarize these notes into 3 simple bullet points. The final output MUST be in {target_lang}: {notes}"}]
                 )
                 st.success(comp_res.choices[0].message.content)
-            else:
-                st.warning("Please paste notes first.")
 else:
-    st.warning("👈 Please enter your Groq API Key to begin.")
+    st.warning("👈 Please enter your Groq API Key and select a language.")
