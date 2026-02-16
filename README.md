@@ -34,7 +34,7 @@ Seniors often face "Information Overload" after medical visits, leading to medic
 
 ## 🚀 Installation & Setup
 * **1.Clone the Project**:
-git clone https://github.com/Anushka1006/elderly-care-companion.git
+git clone https://github.com/Anushka1006/elderly_care_companion.git
 cd elderly-care-companion
 * **2.Setup Virtual Environment**:
 python -m venv venv
